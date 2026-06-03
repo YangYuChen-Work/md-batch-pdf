@@ -1,0 +1,5 @@
+Output/*.pdf
+Input/*.md
+__pycache__/
+*.pyc
+*.log
