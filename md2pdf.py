@@ -14,6 +14,7 @@ import tempfile
 from pathlib import Path
 
 import markdown
+from pygments.formatters import HtmlFormatter
 
 
 # ── Browser detection ────────────────────────────────────────────────────────
@@ -123,6 +124,10 @@ hr { border: 0; border-top: 1px solid #d8dee4; margin: 24px 0; }
 .codehilite pre { background: none; padding: 0; margin: 0; }
 """
 
+# Append pygments syntax-highlighting color rules (GitHub-like light theme)
+CSS += HtmlFormatter(style="friendly").get_style_defs(".codehilite")
+
+
 
 # ── Conversion logic ─────────────────────────────────────────────────────────
 
@@ -187,6 +192,7 @@ def convert_file(md_path: Path, input_dir: Path, output_dir: Path) -> str | None
                 "--headless",
                 "--disable-gpu",
                 "--no-sandbox",
+                "--no-pdf-header-footer",
                 f"--print-to-pdf={pdf_path}",
                 f"file:///{tmp_html}",
             ],
