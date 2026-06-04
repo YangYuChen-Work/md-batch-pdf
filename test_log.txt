@@ -1,0 +1,9 @@
+Browser: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+Found 2 Markdown file(s)
+
+[1/2] jvm.md  OK
+[2/2] Õº∆¨≤‚ ‘.md  OK
+
+--- Done ---
+  Success: 2  Failed: 0
+  Output:  D:\◊¿√Ê\WorkPlace\Tools\md2pdf\Output

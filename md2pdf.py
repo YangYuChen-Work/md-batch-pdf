@@ -8,6 +8,7 @@ Uses the system's built-in browser (Edge/Chrome) for PDF rendering —
 no extra downloads needed.
 """
 
+import re
 import subprocess
 import sys
 import tempfile
@@ -169,6 +170,21 @@ def build_full_html(body: str, title: str) -> str:
 </html>"""
 
 
+def resolve_image_paths(html: str, md_dir: Path) -> str:
+    """Convert relative image src paths to absolute file:// URLs so the
+    browser can load them from the temp HTML location."""
+    def _rewrite(m: re.Match) -> str:
+        attr, src, tail = m.group(1), m.group(2), m.group(3)
+        if src.startswith(("http://", "https://", "data:", "file:///")):
+            return m.group(0)  # keep as-is
+        resolved = (md_dir / src).resolve()
+        if resolved.is_file():
+            return f'{attr}{resolved.as_uri()}{tail}'
+        return m.group(0)  # file not found, leave original path as fallback
+
+    return re.sub(r'(src=")([^"]+)(")', _rewrite, html)
+
+
 def convert_file(md_path: Path, input_dir: Path, output_dir: Path) -> str | None:
     """Convert a single .md to .pdf. Returns error string or None on success."""
     rel_path = md_path.relative_to(input_dir)
@@ -176,6 +192,7 @@ def convert_file(md_path: Path, input_dir: Path, output_dir: Path) -> str | None
     pdf_path.parent.mkdir(parents=True, exist_ok=True)
 
     body = md_to_html(md_path)
+    body = resolve_image_paths(body, md_path.parent)
     html = build_full_html(body, md_path.stem)
 
     with tempfile.NamedTemporaryFile(
